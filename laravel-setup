@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+## Set up colors
+red=`tput setaf 1`
+green=`tput setaf 2`
+orange=`tput setaf 3`
+reset=`tput sgr0`
+
+## Init functions
+showhelp()
+{
+    echo " "
+    echo "${green}Lambo: Super-powered '${orange}laravel new${green}' for Laravel and Valet"
+    echo "${reset}________________________________________________________"
+    echo " "
+    echo "${orange}Usage:"
+    echo "${reset}  laravel-setup admin [arguments]"
+    echo " "
+    echo "${orange}Options:"
+    echo "${green}  -h, --help${reset}                 Show brief help"
+    echo "${green}  -d, --dev${reset}                  Use Composer to install on the develop branch"
+    quit
+}
+
+abort()
+{
+    echo >&2 '
+***********************************************
+*** There was an error running this script. ***
+***********************************************
+'
+    echo "An error occurred. Exiting..." >&2
+    exit 1
+}
+
+quit()
+{
+    trap : 0
+    exit 0
+}
+
+## Set up error handling
+trap 'abort' 0
+
+## Start script
+
+PROJECTNAME=$1
+PROJECTPATH="."
+MESSAGE="Initial commit."
+DEVELOP=false
+
+### Check for project name argument; if none passed, show help
+if [ $# -eq 0 ]
+    then
+        showhelp
+fi
+
+### Handle arguments
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -h|--help)
+            showhelp
+            ;;
+        -d|--develop|--dev)
+            DEVELOP=true
+            shift
+            ;;
+        *)
+            ;;
+    esac
+
+    shift
+done
+
+echo "
+***********************************************
+Setup Laravel Application ${green}$PROJECTNAME${reset}
+***********************************************
+"
+php artisan basis:env -f
+php artisan basis:dependencies -f
+composer update
+php artisan basis:register -f
+php artisan vendor:publish
+php artisan basis:install $PROJECTNAME -f
+
+php artisan migrate
+
+npm install
+gulp
+
+git init
+git add .
+git commit -m "$MESSAGE"
+
+quit
+
+echo "
+
+***********************************************
+
+You're ready to go!"
+
+# End script; disable error handling
+trap : 0
