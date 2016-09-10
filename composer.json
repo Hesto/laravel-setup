@@ -1,6 +1,6 @@
 {
     "name": "hesto/laravel-setup",
-    "description": "Super-powered 'laravel new' with Laravel and Valet.",
+    "description": "Setup Laravel Application with packages",
     "keywords": ["laravel"],
     "license": "MIT",
     "authors": [
