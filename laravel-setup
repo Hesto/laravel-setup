@@ -10,12 +10,14 @@ reset=`tput sgr0`
 showhelp()
 {
     echo " "
-    echo "${green}Lambo: Super-powered '${orange}laravel new${green}' for Laravel and Valet"
+    echo "${green}Hesto Laravel Setup: Install Packages for ${orange}Laravel 5.3"
     echo "${reset}________________________________________________________"
     echo " "
     echo "${orange}Usage:"
-    echo "${reset}  laravel-setup admin [arguments]"
+    echo "${reset} laravel-setup {guard} [arguments]"
     echo " "
+    echo "${orange}Example:"
+    echo "${reset} laravel-setup admin"
     echo "${orange}Options:"
     echo "${green}  -h, --help${reset}                 Show brief help"
     echo "${green}  -d, --dev${reset}                  Use Composer to install on the develop branch"
@@ -85,12 +87,17 @@ php artisan basis:dependencies -f
 composer update
 php artisan basis:register -f
 php artisan vendor:publish
-php artisan basis:install $PROJECTNAME -f
 
-php artisan migrate
+php artisan make:auth
+php artisan multi-auth:install $PROJECTNAME -f
+php artisan basis:install $PROJECTNAME -f
+php artisan rbac:install
+php artisan rbac:migration $PROJECTNAME -f
 
 npm install
 gulp
+
+php artisan migrate
 
 git init
 git add .
