@@ -90,18 +90,22 @@ php artisan vendor:publish
 
 php artisan make:auth
 php artisan multi-auth:install $PROJECTNAME -f
+sleep 2
 php artisan basis:install $PROJECTNAME -f
 php artisan rbac:install
+
+# This must execute later because migrations order is important
+sleep 2
 php artisan rbac:migration $PROJECTNAME -f
 
 npm install
 gulp
 
-php artisan migrate
-
 git init
 git add .
 git commit -m "$MESSAGE"
+
+php artisan migrate
 
 quit
 
