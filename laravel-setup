@@ -14,7 +14,7 @@ showhelp()
     echo "${reset}________________________________________________________"
     echo " "
     echo "${orange}Usage:"
-    echo "${reset} laravel-setup {guard} [arguments]"
+    echo "${reset} laravel-setup {guard} {framework} [arguments]"
     echo " "
     echo "${orange}Example:"
     echo "${reset} laravel-setup admin"
@@ -47,12 +47,13 @@ trap 'abort' 0
 ## Start script
 
 PROJECTNAME=$1
+FRAMEWORK=$2
 PROJECTPATH="."
 MESSAGE="Initial commit."
 DEVELOP=false
 
-### Check for project name argument; if none passed, show help
-if [ $# -eq 0 ]
+### Check for project name and framework arguments; if none passed, show help
+if [ $# -eq 1 ]
     then
         showhelp
 fi
@@ -83,22 +84,22 @@ Setup Laravel Application ${green}$PROJECTNAME${reset}
 ***********************************************
 "
 php artisan basis:env -f
-php artisan basis:dependencies -f
+php artisan basis:dependencies -f --framework=$FRAMEWORK
 composer update
-php artisan basis:register -f
+php artisan basis:register -f --framework=$FRAMEWORK
 php artisan vendor:publish
 
 php artisan make:auth
 php artisan multi-auth:install $PROJECTNAME -f
 sleep 2
-php artisan basis:install $PROJECTNAME -f
+php artisan basis:install $PROJECTNAME -f --framework=$FRAMEWORK
 php artisan rbac:install
 
+npm install
+
 # This must execute later because migrations order is important
-sleep 2
 php artisan rbac:migration $PROJECTNAME -f
 
-npm install
 gulp
 
 git init
